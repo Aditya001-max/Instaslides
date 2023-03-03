@@ -26,3 +26,4 @@ from .classic_song_slide import ClassicSongSlide
 from .engine.start_slide import generate_start_slide
 from .engine.song_slides import generate_song_slides
 from .engine.song_template import generate_song_template
+from .engine.calc_slide_count import count_number_of_slides_to_be_generated
