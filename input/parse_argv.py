@@ -20,17 +20,18 @@ import sys
 from utils import log, error_msg
 
 
-def parse_argv(slidegen) -> None:
+def parse_argv_as_tuple() -> tuple:
     try:
-        slidegen.song_file_path = sys.argv[1]
-        slidegen.output_dir = sys.argv[2]
+        song_file_path = sys.argv[1]
+        output_dir = sys.argv[2]
     except IndexError:
         error_msg("incorrect amount of arguments provided, exiting...")
     try:
-        slidegen.chosen_structure = sys.argv[3]
-        if slidegen.chosen_structure.strip() == "":
-            slidegen.chosen_structure = ""
+        chosen_structure = sys.argv[3]
+        if chosen_structure.strip() == "":
+            chosen_structure = ""
     except IndexError:
-        slidegen.chosen_structure = ""
+        chosen_structure = ""
 
-    log("parsing {}...".format(slidegen.song_file_path))
+    log("parsing {}...".format(song_file_path))
+    return song_file_path, output_dir, chosen_structure
