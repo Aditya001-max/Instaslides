@@ -17,13 +17,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
 
-from utils import log, error_msg
+from utils import log, error_msg, expand_dir
 
 
 def parse_argv_as_tuple() -> tuple:
     try:
         song_file_path = sys.argv[1]
-        output_dir = sys.argv[2]
+        output_dir = expand_dir(sys.argv[2])
     except IndexError:
         error_msg("incorrect amount of arguments provided, exiting...")
     try:
