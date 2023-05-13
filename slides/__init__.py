@@ -19,6 +19,8 @@ from .song_template import SongTemplate
 from .start_slide import StartSlide
 from .song_slide import SongSlide
 
+from .slide_style import SlideStyle
+
 from .classic_song_template import ClassicSongTemplate
 from .classic_start_slide import ClassicStartSlide
 from .classic_song_slide import ClassicSongSlide
