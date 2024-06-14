@@ -30,5 +30,6 @@ from .scripts import (
     make_sure_file_exists,
     switch_to_song,
     is_valid_cd_record_checkfile,
-    burn_cd_of_day,
+    burn_cds_of_day,
+    mark_end_of_recording,
 )
