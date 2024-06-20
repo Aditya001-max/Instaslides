@@ -17,53 +17,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys
-from os import listdir
-
 from PyQt5.QtWidgets import (  # pylint: disable=no-name-in-module
-    QApplication,
-    QDialog,
     QMessageBox,
 )
 
 from utils import (
     burn_cds_of_day,
-    log,
+    choose_cd_day,
 )
 from input import (
     validate_cd_record_config,
-    RadioButtonDialog,
     InfoMsgBox,
 )
-import config as const
-
-
-def choose_cd_day() -> list[str]:
-    # pylint: disable=unused-variable
-    app = QApplication([])
-    try:
-        dirs = sorted(listdir(const.CD_RECORD_OUTPUT_BASEDIR))
-        dirs.reverse()
-
-        if not dirs:
-            return [
-                f"Did not find any CD's in: {const.CD_RECORD_OUTPUT_BASEDIR}.",
-                "",
-            ]
-
-        dialog = RadioButtonDialog(dirs, "Choose a CD to Burn")
-        if dialog.exec_() == QDialog.Accepted:
-            # TODO: update text for possibly mutliple CD's
-            log(f"Burning CD for day: {dialog.chosen}")
-            return ["", dialog.chosen]
-        return ["ignore", ""]
-    except (FileNotFoundError, PermissionError, IOError):
-        pass
-
-    return [
-        f"Failed to access directory: {const.CD_RECORD_OUTPUT_BASEDIR}.",
-        "",
-    ]
 
 
 def choose_and_burn_cd():
