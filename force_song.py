@@ -19,13 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from sys import argv
 
-
 from utils import (
     error_msg,
     make_sure_file_exists,
     switch_to_song,
 )
-from input import validate_songchooser_config
+from input import validate_obs_song_scene_switcher_config
 import config as const
 
 
@@ -45,12 +44,8 @@ def exit_if_force_int_is_illegal():
         error_msg("force integer cannot be smaller than 1")
 
 
-def main() -> None:
-    validate_songchooser_config()
+if __name__ == "__main__":
+    validate_obs_song_scene_switcher_config()
     make_sure_file_exists(const.NEXTSONG_CACHE_FILE)
     exit_if_force_int_is_illegal()
     switch_to_song(get_force_int())
-
-
-if __name__ == "__main__":
-    main()
