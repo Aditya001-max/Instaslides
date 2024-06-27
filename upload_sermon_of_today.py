@@ -16,8 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from utils import (
-    make_sure_there_is_no_ongoing_cd_recording,
     get_yyyy_mm_dd_date,
+)
+from recording import (
+    make_sure_there_is_no_ongoing_cd_recording,
     upload_sermon_for_day,
 )
 from input import (
