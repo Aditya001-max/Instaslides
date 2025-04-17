@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright © 2024 Noah Vogt <noah@noahvogt.com>
+# Copyright © 2025 Noah Vogt <noah@noahvogt.com>
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 import colorama
 
 from utils import (
-    get_yyyy_mm_dd_date,
+    get_current_yyyy_mm_dd_date,
 )
 from recording import (
     make_sure_there_is_no_ongoing_cd_recording,
@@ -33,4 +33,4 @@ if __name__ == "__main__":
     colorama.init()
     validate_sermon_upload_config()
     make_sure_there_is_no_ongoing_cd_recording()
-    upload_sermon_for_day(get_yyyy_mm_dd_date())
+    upload_sermon_for_day(get_current_yyyy_mm_dd_date())
