@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[![Live Web Generator](https://img.shields.io/badge/Live%20Web%20Studio-Generate%20Slides%20Online-0ea5e9?style=for-the-badge&logo=googlechrome&logoColor=white)](https://aditya001-max.github.io/slidegen/)
+[![Live Web Generator](https://img.shields.io/badge/Live%20Web%20Studio-Generate%20Slides%20Online-0ea5e9?style=for-the-badge&logo=googlechrome&logoColor=white)](https://aditya001-max.github.io/Instaslides/)
 [![Python Version](https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776ab?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![OBS Studio](https://img.shields.io/badge/OBS%20Studio-WebSocket%20v5-27272a?style=for-the-badge&logo=obsstudio&logoColor=white)](https://obsproject.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald?style=for-the-badge)](LICENSE)
@@ -13,7 +13,7 @@
   <b>Instant high-definition 1080p slide generation, bi-directional OBS Studio live automation, and event archival pipeline.</b>
 </p>
 
-[🌐 Launch Live Web Studio](https://aditya001-max.github.io/slidegen/) • [📖 Documentation](#-table-of-contents) • [🚀 Quickstart](#-quickstart--execution-guide) • [🏗️ Architecture](#%EF%B8%8F-system-architecture) • [📄 License](#-license--author)
+[🌐 Launch Live Web Studio](https://aditya001-max.github.io/Instaslides/) • [📖 Documentation](#-table-of-contents) • [🚀 Quickstart](#-quickstart--execution-guide) • [🏗️ Architecture](#%EF%B8%8F-system-architecture) • [📄 License](#-license--author)
 
 </div>
 
@@ -22,7 +22,7 @@
 ## ⚡ Instant Online Access (Zero Installation)
 
 > ### 🚀 Anyone can generate presentation and worship slides directly in their browser:
-> ### 👉 **[Launch SlideGen Live Web Studio](https://aditya001-max.github.io/slidegen/)**
+> ### 👉 **[Launch SlideGen Live Web Studio](https://aditya001-max.github.io/Instaslides/)**
 > 
 > * **No installation or downloads required** — runs purely in modern browsers.
 > * **Instant Live Preview** with multi-verse navigation, kerning, and structure parsing (`1, R, 2, R, 3`).
@@ -134,7 +134,7 @@ flowchart TD
 ### 1. Browser Generation (GitHub Pages)
 No installation required. Open the live studio directly in any browser:
 ```text
-https://aditya001-max.github.io/slidegen/
+https://aditya001-max.github.io/Instaslides/
 ```
 1. Paste song text or select a preset (*Amazing Grace*, *Silent Night*, *Custom Anthem*).
 2. Choose theme colors and output resolution.
@@ -147,7 +147,7 @@ https://aditya001-max.github.io/slidegen/
 Run the local web server with built-in REST API:
 ```bash
 # Clone the repository
-git clone https://github.com/Aditya001-max/slidegen.git
+git clone https://github.com/Aditya001-max/Instaslides.git
 cd slidegen
 
 # Install dependencies
@@ -290,8 +290,8 @@ Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for full details
 - **Author & Maintainer:** **Aditya001-max**
 - **Email:** [kaushikadityaraj001@gmail.com](mailto:kaushikadityaraj001@gmail.com)
 - **GitHub Profile:** [https://github.com/Aditya001-max](https://github.com/Aditya001-max)
-- **Project Repository:** [https://github.com/Aditya001-max/slidegen](https://github.com/Aditya001-max/slidegen)
-- **Live Slide Generator:** [https://aditya001-max.github.io/slidegen/](https://aditya001-max.github.io/slidegen/)
+- **Project Repository:** [https://github.com/Aditya001-max/Instaslides](https://github.com/Aditya001-max/Instaslides)
+- **Live Slide Generator:** [https://aditya001-max.github.io/Instaslides/](https://aditya001-max.github.io/Instaslides/)
 
 ---
 *Architected and maintained with precision by Aditya001-max.*

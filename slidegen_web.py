@@ -31,7 +31,7 @@ def api_health():
         "status": "healthy",
         "service": "SlideGen Web Studio",
         "author": "Aditya001-max",
-        "repository": "https://github.com/Aditya001-max/slidegen"
+        "repository": "https://github.com/Aditya001-max/Instaslides"
     })
 
 
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     port = int(os.environ.get("WEB_SERVER_PORT", 5000))
     print(f"=========================================================")
     print(f" SlideGen Studio running at: http://{host}:{port}")
-    print(f" Live GitHub Studio: https://aditya001-max.github.io/slidegen/")
+    print(f" Live GitHub Studio: https://aditya001-max.github.io/Instaslides/")
     print(f" Author: Aditya001-max <kaushikadityaraj001@gmail.com>")
     print(f"=========================================================")
     app.run(host=host, port=port, debug=False)
