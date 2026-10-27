@@ -682,7 +682,7 @@ const thumbnailsContainer = document.getElementById('thumbnailsContainer');
 
 // --- Parser Function ---
 function parseSongFile(rawText) {
-    const lines = rawText.split('\\n').map(l => l.replace(/\\r$/, ''));
+    const lines = rawText.split('\n').map(l => l.replace(/\r$/, ''));
     const metadata = {};
     const songtext = {};
     let inBody = false;
@@ -707,7 +707,7 @@ function parseSongFile(rawText) {
         } else {
             if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
                 if (currentKey) {
-                    songtext[currentKey] = currentBody.join('\\n').trim();
+                    songtext[currentKey] = currentBody.join('\n').trim();
                 }
                 currentKey = trimmed.slice(1, -1);
                 currentBody = [];
@@ -717,7 +717,7 @@ function parseSongFile(rawText) {
         }
     }
     if (currentKey && currentBody.length > 0) {
-        songtext[currentKey] = currentBody.join('\\n').trim();
+        songtext[currentKey] = currentBody.join('\n').trim();
     }
 
     return { metadata, songtext };
@@ -753,7 +753,7 @@ function buildSlideObjects() {
         const verseLyrics = songtext[structItem] || `[Structure element ${structItem} not found]`;
         
         // Check for multi-page split if too long (> 8 lines)
-        const lines = verseLyrics.split('\\n');
+        const lines = verseLyrics.split('\n');
         const maxLinesPerPage = 8;
         
         if (lines.length <= maxLinesPerPage) {
@@ -984,7 +984,7 @@ async function downloadAllAsZip() {
     for (let i = 0; i < generatedSlideList.length; i++) {
         renderSlide(generatedSlideList[i]);
         const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
-        const base64Data = dataUrl.replace(/^data:image\\/jpeg;base64,/, "");
+        const base64Data = dataUrl.split(',')[1];
         folder.file(`slide-${String(i + 1).padStart(2, '0')}.jpg`, base64Data, { base64: true });
     }
     // Restore current slide view
