@@ -1,19 +1,22 @@
-# 📽️ SlideGen: Enterprise Broadcast Slide & Live AV Automation Suite
+# 📽️ Instaslides: Enterprise Slide Generator & Live AV Automation Suite
 
 <div align="center">
 
-[![Live Web Generator](https://img.shields.io/badge/Live%20Web%20Studio-Generate%20Slides%20Online-0ea5e9?style=for-the-badge&logo=googlechrome&logoColor=white)](https://aditya001-max.github.io/Instaslides/)
+# 🚀 [CLICK HERE TO LAUNCH & TEST INSTASLIDES LIVE](https://aditya001-max.github.io/Instaslides/)
+
+[![Live Web Studio](https://img.shields.io/badge/Live%20Web%20Studio-Generate%20Slides%20Online-0ea5e9?style=for-the-badge&logo=googlechrome&logoColor=white)](https://aditya001-max.github.io/Instaslides/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Aditya001--max%2FInstaslides-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Aditya001-max/Instaslides)
+[![CI/CD Pages Deployment](https://img.shields.io/badge/GitHub%20Pages-Active%20%26%20Deployed-10b981?style=for-the-badge&logo=githubactions&logoColor=white)](https://aditya001-max.github.io/Instaslides/)
 [![Python Version](https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776ab?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![OBS Studio](https://img.shields.io/badge/OBS%20Studio-WebSocket%20v5-27272a?style=for-the-badge&logo=obsstudio&logoColor=white)](https://obsproject.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald?style=for-the-badge)](LICENSE)
 [![Build Status](https://img.shields.io/badge/Tests-Passing%20(100%25)-10b981?style=for-the-badge&logo=pytest&logoColor=white)](tests/)
-[![Author](https://img.shields.io/badge/Author-Aditya001--max-blueviolet?style=for-the-badge&logo=github)](https://github.com/Aditya001-max)
 
 <p align="center">
   <b>Instant high-definition 1080p slide generation, bi-directional OBS Studio live automation, and event archival pipeline.</b>
 </p>
 
-[🌐 Launch Live Web Studio](https://aditya001-max.github.io/Instaslides/) • [📖 Documentation](#-table-of-contents) • [🚀 Quickstart](#-quickstart--execution-guide) • [🏗️ Architecture](#%EF%B8%8F-system-architecture) • [📄 License](#-license--author)
+[🌐 Test Live in Browser](https://aditya001-max.github.io/Instaslides/) • [🧪 Testing Guide](#-interactive-testing-guide-how-to-test-via-github) • [🏗️ Architecture](#%EF%B8%8F-system-architecture) • [🚀 CLI & Local Setup](#-quickstart--execution-guide) • [📄 License](#-license--author)
 
 </div>
 
@@ -21,12 +24,90 @@
 
 ## ⚡ Instant Online Access (Zero Installation)
 
-> ### 🚀 Anyone can generate presentation and worship slides directly in their browser:
-> ### 👉 **[Launch SlideGen Live Web Studio](https://aditya001-max.github.io/Instaslides/)**
+> ### 🚀 Anyone can generate presentation, worship, and broadcast slides directly in their browser:
+> ### 👉 **[Launch Instaslides Live Studio](https://aditya001-max.github.io/Instaslides/)**
 > 
-> * **No installation or downloads required** — runs purely in modern browsers.
-> * **Instant Live Preview** with multi-verse navigation, kerning, and structure parsing (`1, R, 2, R, 3`).
+> * **100% Free & No Setup Required** — runs completely in modern web browsers (Chrome, Edge, Safari, Firefox).
+> * **Instant Real-Time Preview** with multi-verse navigation, typographical kerning, and structure sequencing (`1, R, 2, R, 3`).
 > * **1-Click Batch Export** to Full HD (1920×1080) JPEG/PNG or a zipped OBS-ready package.
+
+---
+
+## 🧪 Interactive Testing Guide (How to Test via GitHub)
+
+You can thoroughly test Instaslides right now through either **Browser Testing (Zero Setup)** or **Local Developer Testing**:
+
+### 🎯 Test 1: Instant Browser Test (30 Seconds, No Installs)
+1. Open the live link: **[https://aditya001-max.github.io/Instaslides/](https://aditya001-max.github.io/Instaslides/)**.
+2. **Preset Testing:** Click the **Preset** dropdown on the top-left and select:
+   - `Preset: Amazing Grace` (4 Verses)
+   - `Preset: Silent Night (Stille Nacht)` (Multilingual German / English)
+   - `Preset: Worship Anthem` (Includes Verse + Refrain `[R]`)
+3. **Canvas Live Render:** Look at the 16:9 canvas preview on the right. Notice:
+   - Top banner with high-contrast song title.
+   - Distinct attribution tags (Text author, Melody composer, Book hymnal #).
+   - Bottom-right sequence dots tracking the exact playback progress.
+4. **Slide Navigation:**
+   - Click `Next ▶` or press the **Spacebar / Right Arrow** on your keyboard to advance through slides.
+   - Notice the verse indicators change seamlessly (e.g. `Verse 1` -> `Verse 2` -> `Refrain`).
+5. **Theme Customization:**
+   - Switch the **Theme Preset** to `Modern Obsidian & Cyan` or `Emerald Sanctuary`.
+   - Pick custom background and accent colors with the live color pickers.
+6. **OBS Export Test:**
+   - Click **"Download Current Slide"** to export an instant 1920×1080 JPEG.
+   - Click **"Download All as ZIP (OBS Ready)"** to test batch client-side packaging with JSZip.
+
+---
+
+### 💻 Test 2: Local Command-Line Test (Python)
+To test headless slide generation on your local machine:
+
+```bash
+# 1. Clone your repository
+git clone https://github.com/Aditya001-max/Instaslides.git
+cd Instaslides
+
+# 2. Run the pure-Python Pillow engine (zero C-library dependencies)
+python pillow_engine.py template.txt ./output_slides "1, 2, 3"
+
+# 3. Verify output
+ls -la ./output_slides
+# Expected: slide-01.jpg, slide-02.jpg, slide-03.jpg, slide-04.jpg
+```
+
+---
+
+### 🌐 Test 3: Local Web Server & API Test
+To run the local web studio daemon with REST endpoints:
+
+```bash
+# Launch the web daemon
+python slidegen_web.py
+```
+Open **[http://localhost:5000](http://localhost:5000)** in your browser.
+
+To verify the REST API health endpoint:
+```bash
+curl http://localhost:5000/api/health
+# Response: {"author":"Aditya001-max","repository":"https://github.com/Aditya001-max/Instaslides","service":"SlideGen Web Studio","status":"healthy"}
+```
+
+---
+
+### 🔬 Test 4: Automated Test Suite (Pytest)
+Run the automated unit test suite:
+
+```bash
+python -m pytest tests/ -v
+```
+Expected output:
+```text
+tests/test_slidegen.py::test_parse_song_file PASSED               [ 25%]
+tests/test_slidegen.py::test_generate_all_slides PASSED            [ 50%]
+tests/test_slidegen.py::test_web_server_health PASSED              [ 75%]
+tests/test_slidegen.py::test_web_server_generate_endpoint PASSED   [100%]
+============================== 4 passed in 0.90s ==============================
+```
 
 ---
 
@@ -43,14 +124,13 @@
   - [5. Audio Archival & SCSI CD Daemon](#5-audio-archival--scsi-cd-daemon)
 - [Source File Format & Template Layout](#-source-file-format--template-layout)
 - [Configuration Reference](#%EF%B8%8F-configuration-reference)
-- [Test Suite & Quality Verification](#-test-suite--quality-verification)
 - [License & Author](#-license--author)
 
 ---
 
 ## 🌟 Executive Summary
 
-**SlideGen** is an enterprise-grade automated presentation rendering and live audio-visual synchronization engine. Engineered to replace fragile, manual slide production workflows, it converts concise, plain text lyric and metadata files into broadcast-quality 1080p graphic slides in under 50 milliseconds. 
+**Instaslides** is an enterprise-grade automated presentation rendering and live audio-visual synchronization engine. Engineered to replace fragile, manual slide production workflows, it converts concise, plain text lyric and metadata files into broadcast-quality 1080p graphic slides in under 50 milliseconds. 
 
 The suite features an event-driven OBS Studio WebSocket daemon for seamless live scene transitions, asynchronous batch rendering engines (Pillow & Wand), an automated SCSI CD burning and sermon audio ingest pipeline, and a zero-install interactive Web Studio accessible to anyone globally via GitHub Pages.
 
@@ -58,12 +138,12 @@ The suite features an event-driven OBS Studio WebSocket daemon for seamless live
 
 ## 🏗️ System Architecture
 
-SlideGen operates across a decoupled microservice and pipeline topology, connecting client web interfaces, headless CLI generators, broadcast streaming software, and archival hardware:
+Instaslides operates across a decoupled microservice and pipeline topology, connecting client web interfaces, headless CLI generators, broadcast streaming software, and archival hardware:
 
 ```mermaid
 flowchart TD
     subgraph ClientTier["🌐 Client & Presentation Layer"]
-        WebUI["SlideGen Live Web Studio<br/>(GitHub Pages / HTML5 Canvas)"]
+        WebUI["Instaslides Live Web Studio<br/>(GitHub Pages / HTML5 Canvas)"]
         CLI["Headless CLI Engine<br/>(slidegen.py / pillow_engine.py)"]
         FZF["Interactive Terminal UI<br/>(ssync.py Fuzzy Finder)"]
     end
@@ -148,7 +228,7 @@ Run the local web server with built-in REST API:
 ```bash
 # Clone the repository
 git clone https://github.com/Aditya001-max/Instaslides.git
-cd slidegen
+cd Instaslides
 
 # Install dependencies
 pip install -r requirements-win32.txt   # Windows
@@ -211,7 +291,7 @@ python set_cd_marker.py
 
 ## 📝 Source File Format & Template Layout
 
-SlideGen uses a clean, human-readable plain text layout divided into a **Metadata Header** and a **Text Body**:
+Instaslides uses a clean, human-readable plain text layout divided into a **Metadata Header** and a **Text Body**:
 
 ```ini
 title: Amazing Grace
@@ -261,25 +341,6 @@ cp .env.example .env
 | `OBS_SLIDES_DIR` | `~/Documents/OBS_Slides` | Directory where OBS watches slide images |
 | `CD_RECORD_WEBSOCKET_PORT` | `8765` | WebSocket status broadcast port |
 | `SERMON_UPLOAD_WPSM_API_BASE_URL` | `""` | WordPress Sermon Manager API base URL |
-
----
-
-## 🧪 Test Suite & Quality Verification
-
-Run the comprehensive automated test suite with pytest:
-
-```bash
-python -m pytest tests/ -v
-```
-
-Expected output:
-```text
-tests/test_slidegen.py::test_parse_song_file PASSED               [ 25%]
-tests/test_slidegen.py::test_generate_all_slides PASSED            [ 50%]
-tests/test_slidegen.py::test_web_server_health PASSED              [ 75%]
-tests/test_slidegen.py::test_web_server_generate_endpoint PASSED   [100%]
-============================== 4 passed in 0.90s ==============================
-```
 
 ---
 
