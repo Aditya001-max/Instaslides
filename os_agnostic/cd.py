@@ -1,4 +1,4 @@
-# Copyright © 2024 Noah Vogt <noah@noahvogt.com>
+# Copyright (c) 2024-2026 Aditya001-max <kaushikadityaraj001@gmail.com>
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,13 +24,14 @@ from PyQt5.QtWidgets import (  # pylint: disable=no-name-in-module
 
 from utils import log, CustomException, RadioButtonDialog
 
+import config as const
+
 if os.name == "nt":
     # pylint: disable=import-error
     import wmi  # pyright: ignore
     import ctypes
     from subprocess import PIPE, run
     from re import match, search
-    import config as const
 else:
     from pycdio import DRIVER_DEVICE
     from cdio import (
@@ -148,7 +149,7 @@ def eject_drive(drive: str) -> None:  # pyright: ignore
             drive_ejected = False
             for cd in raw_drives:
                 if str(cd.get_device()) == drive:
-                    drive.eject_media()  # pyright: ignore
+                    cd.eject_media()  # pyright: ignore
                     drive_ejected = True
             if not drive_ejected:
                 raise CustomException(f"Drive {drive} not found")

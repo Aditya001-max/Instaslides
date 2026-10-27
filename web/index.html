@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SlideGen - Live Web Slide Generator for Worship & OBS Studio</title>
+    <meta name="description" content="Generate high-resolution song, presentation, and worship slides instantly from plain text in your web browser. 100% free, OBS-ready, developed by Aditya001-max.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- JSZip for batch slide packaging -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: rgba(17, 24, 39, 0.75);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-primary: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.35);
+            --accent-success: #10b981;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: white;
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to right, #ffffff, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-badge {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8, #2563eb);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            border: none;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+        }
+
+        /* App Layout */
+        .main-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            flex: 1;
+            display: grid;
+            grid-template-columns: 460px 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1080px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .preset-select {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.45rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .preset-select option {
+            background: var(--bg-secondary);
+            color: var(--text-main);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-size: 0.825rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .form-control {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: var(--radius-md);
+            padding: 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 2px var(--accent-glow);
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .theme-select {
+            grid-column: span 2;
+        }
+
+        /* Preview Column */
+        .preview-pane {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .preview-wrapper {
+            background: #000;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            aspect-ratio: 16 / 9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas#slideCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+        }
+
+        .slide-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .slide-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .slide-counter {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-sm);
+        }
+
+        .export-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Thumbnails Strip */
+        .thumbnails-container {
+            display: flex;
+            gap: 0.75rem;
+            overflow-x: auto;
+            padding: 0.5rem 0.25rem;
+        }
+
+        .thumbnails-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .thumbnails-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+        }
+
+        .thumb-item {
+            flex: 0 0 130px;
+            aspect-ratio: 16 / 9;
+            background: #1e293b;
+            border: 2px solid transparent;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .thumb-item.active {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .thumb-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .thumb-label {
+            position: absolute;
+            bottom: 2px;
+            left: 2px;
+            background: rgba(0, 0, 0, 0.7);
+            font-size: 0.65rem;
+            padding: 1px 4px;
+            border-radius: 3px;
+            color: white;
+        }
+
+        /* Features List */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1rem;
+        }
+
+        .feature-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+        }
+
+        .feature-box h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-box p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: auto;
+        }
+
+        footer a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-container">
+        <a href="#" class="brand">
+            <div class="brand-icon">SG</div>
+            <div>
+                <div class="brand-title">SlideGen Live Studio</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Cloud Slide & Presentation Generator</div>
+            </div>
+            <span class="brand-badge">v2.4 Live Web</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="https://github.com/Aditya001-max/slidegen" target="_blank" class="btn btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                GitHub Repository
+            </a>
+            <button id="btnGenerate" class="btn btn-primary">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Generate Slides
+            </button>
+        </div>
+    </div>
+</header>
+
+<main class="main-container">
+    <!-- Left Column: Input Form -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                Song Editor
+            </h2>
+            <select id="presetSelect" class="preset-select">
+                <option value="amazing_grace">Preset: Amazing Grace</option>
+                <option value="stille_nacht">Preset: Silent Night (Stille Nacht)</option>
+                <option value="custom_hymn">Preset: Worship Anthem</option>
+                <option value="blank">Blank Template</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="songTextInput">
+                <span>Song Text (Metadata + Verses)</span>
+                <span id="syntaxStatus" style="color: var(--accent-success); font-weight: normal; text-transform: none;">Valid Format</span>
+            </label>
+            <textarea id="songTextInput" class="form-control" rows="13" spellcheck="false"></textarea>
+        </div>
+
+        <div class="controls-grid">
+            <div class="form-group">
+                <label class="form-label" for="structureInput">Playback Structure</label>
+                <input type="text" id="structureInput" class="form-control" placeholder="e.g. 1, 2, R, 3">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="themeSelect">Theme Preset</label>
+                <select id="themeSelect" class="preset-select" style="width: 100%; height: 38px;">
+                    <option value="classic">Classic Blue & Slate</option>
+                    <option value="dark">Modern Obsidian & Cyan</option>
+                    <option value="emerald">Emerald Sanctuary</option>
+                    <option value="warm">Warm Gold & Charcoal</option>
+                    <option value="minimal">Minimalist Monochrome</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="controls-grid">
+            <div class="form-group">
+                <label class="form-label" for="bgColorPicker">Background Color</label>
+                <input type="color" id="bgColorPicker" class="form-control" value="#ffffff" style="height: 40px; padding: 2px; cursor: pointer;">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="accentColorPicker">Title / Accent Color</label>
+                <input type="color" id="accentColorPicker" class="form-control" value="#6298a4" style="height: 40px; padding: 2px; cursor: pointer;">
+            </div>
+        </div>
+
+        <button id="btnQuickGenerate" class="btn btn-primary" style="justify-content: center; width: 100%;">
+            ⚡ Re-Generate Live Slides
+        </button>
+    </div>
+
+    <!-- Right Column: Interactive Preview & Export -->
+    <div class="preview-pane">
+        <div class="preview-wrapper">
+            <!-- Native 1920x1080 slide canvas -->
+            <canvas id="slideCanvas" width="1920" height="1080"></canvas>
+        </div>
+
+        <div class="slide-toolbar">
+            <div class="slide-nav">
+                <button id="btnPrevSlide" class="btn btn-secondary">◀ Prev</button>
+                <span id="slideIndicator" class="slide-counter">Slide 1 / 1</span>
+                <button id="btnNextSlide" class="btn btn-secondary">Next ▶</button>
+            </div>
+
+            <div class="export-group">
+                <button id="btnDownloadSingle" class="btn btn-secondary" title="Download current slide as high-res JPG">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Download Current Slide
+                </button>
+                <button id="btnDownloadZip" class="btn btn-success" title="Download entire sequence as ZIP package for OBS">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                    Download All as ZIP (OBS Ready)
+                </button>
+            </div>
+        </div>
+
+        <!-- Thumbnails Strip -->
+        <div class="card" style="padding: 1rem;">
+            <div class="form-label">Sequence Overview</div>
+            <div id="thumbnailsContainer" class="thumbnails-container">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- Highlights & Integration Matrix -->
+        <div class="features-grid">
+            <div class="feature-box">
+                <h4>📺 OBS Studio Direct Integration</h4>
+                <p>Import downloaded slide sequences into OBS Studio's "Image Slide Show" or control live via our integrated Python OBS WebSocket daemon.</p>
+            </div>
+            <div class="feature-box">
+                <h4>📐 1080p Broadcast Quality</h4>
+                <p>Every slide is generated at crisp 1920×1080 resolution with typographical kerning, verse indicators, and sequence progress markers.</p>
+            </div>
+            <div class="feature-box">
+                <h4>⚡ Pure Browser Generation</h4>
+                <p>Zero external software needed. Generates and renders locally on your client machine with lightning speed and offline capability.</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div style="max-width: 1440px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <strong>SlideGen AV Suite</strong> — Architected & Engineered by <a href="https://github.com/Aditya001-max" target="_blank">Aditya001-max</a>
+        </div>
+        <div>
+            Licensed under <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a> • <a href="https://github.com/Aditya001-max/slidegen" target="_blank">View on GitHub</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// --- Preset Song Templates ---
+const PRESETS = {
+    amazing_grace: `title: Amazing Grace
+book: Protest. Songbook #142
+text: John Newton (1779)
+melody: Traditional American Melody
+structure: 1, 2, 3, 4
+
+[1]
+Amazing grace (how sweet the sound)
+that saved a wretch like me!
+I once was lost, but now am found,
+was blind, but now I see.
+
+[2]
+'Twas grace that taught my heart to fear,
+and grace my fears relieved;
+how precious did that grace appear
+the hour I first believed!
+
+[3]
+Through many dangers, toils and snares
+I have already come:
+'tis grace has brought me safe thus far,
+and grace will lead me home.
+
+[4]
+When we've been there ten thousand years,
+bright shining as the sun,
+we've no less days to sing God's praise
+than when we'd first begun.`,
+
+    stille_nacht: `title: Stille Nacht, heilige Nacht
+book: Evangelisches Gesangbuch #46
+text: Joseph Mohr (1816)
+melody: Franz Xaver Gruber (1818)
+structure: 1, 2, 3
+
+[1]
+Stille Nacht, heilige Nacht!
+Alles schläft; einsam wacht
+nur das traute hochheilige Paar.
+Holder Knabe im lockigen Haar,
+schlaf in himmlischer Ruh!
+Schlaf in himmlischer Ruh!
+
+[2]
+Stille Nacht, heilige Nacht!
+Gottes Sohn, o wie lacht
+Lieb' aus deinem göttlichen Mund,
+da uns schlägt die rettende Stund',
+Christ, in deiner Geburt!
+Christ, in deiner Geburt!
+
+[3]
+Stille Nacht, heilige Nacht!
+Hirten erst kundgemacht
+durch der Engel Halleluja,
+tönt es laut von fern und nah:
+Christ, der Retter ist da!
+Christ, der Retter ist da!`,
+
+    custom_hymn: `title: How Great Thou Art
+book: Classic Hymnal #84
+text: Carl Boberg (1885)
+melody: Swedish Folk Melody
+structure: 1, R, 2, R
+
+[1]
+O Lord my God, when I in awesome wonder,
+consider all the worlds thy hands have made,
+I see the stars, I hear the rolling thunder,
+thy power throughout the universe displayed:
+
+[R]
+Then sings my soul, my Saviour God, to thee:
+how great thou art, how great thou art!
+Then sings my soul, my Saviour God, to thee:
+how great thou art, how great thou art!
+
+[2]
+When through the woods and forest glades I wander,
+and hear the birds sing sweetly in the trees;
+when I look down from lofty mountain grandeur,
+and hear the brook and feel the gentle breeze:`
+};
+
+// --- Theme Palettes ---
+const THEMES = {
+    classic: { bg: "#ffffff", text: "#111827", accent: "#6298a4", titleBg: "#e2e8f0" },
+    dark: { bg: "#0f172a", text: "#f8fafc", accent: "#38bdf8", titleBg: "#1e293b" },
+    emerald: { bg: "#064e3b", text: "#ecfdf5", accent: "#34d399", titleBg: "#065f46" },
+    warm: { bg: "#1c1917", text: "#fafaf9", accent: "#f59e0b", titleBg: "#292524" },
+    minimal: { bg: "#ffffff", text: "#000000", accent: "#000000", titleBg: "#f3f4f6" }
+};
+
+// --- State Management ---
+let generatedSlideList = [];
+let currentSlideIndex = 0;
+
+const canvas = document.getElementById('slideCanvas');
+const ctx = canvas.getContext('2d');
+const textInput = document.getElementById('songTextInput');
+const structureInput = document.getElementById('structureInput');
+const presetSelect = document.getElementById('presetSelect');
+const themeSelect = document.getElementById('themeSelect');
+const bgColorPicker = document.getElementById('bgColorPicker');
+const accentColorPicker = document.getElementById('accentColorPicker');
+const slideIndicator = document.getElementById('slideIndicator');
+const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+
+// --- Parser Function ---
+function parseSongFile(rawText) {
+    const lines = rawText.split('\\n').map(l => l.replace(/\\r$/, ''));
+    const metadata = {};
+    const songtext = {};
+    let inBody = false;
+    let currentKey = null;
+    let currentBody = [];
+
+    for (let line of lines) {
+        const trimmed = line.trim();
+        if (!inBody) {
+            if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                inBody = true;
+                currentKey = trimmed.slice(1, -1);
+                currentBody = [];
+                continue;
+            }
+            const colonIdx = line.indexOf(':');
+            if (colonIdx !== -1) {
+                const key = line.slice(0, colonIdx).trim().toLowerCase();
+                const val = line.slice(colonIdx + 1).trim();
+                metadata[key] = val;
+            }
+        } else {
+            if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+                if (currentKey) {
+                    songtext[currentKey] = currentBody.join('\\n').trim();
+                }
+                currentKey = trimmed.slice(1, -1);
+                currentBody = [];
+            } else {
+                currentBody.push(line);
+            }
+        }
+    }
+    if (currentKey && currentBody.length > 0) {
+        songtext[currentKey] = currentBody.join('\\n').trim();
+    }
+
+    return { metadata, songtext };
+}
+
+// --- Slide Generation Core ---
+function buildSlideObjects() {
+    const raw = textInput.value;
+    const { metadata, songtext } = parseSongFile(raw);
+    
+    // Determine structure
+    let structRaw = structureInput.value.trim();
+    if (!structRaw && metadata.structure) {
+        structRaw = metadata.structure;
+        structureInput.value = structRaw;
+    }
+    const structureList = structRaw.split(',').map(s => s.trim()).filter(Boolean);
+
+    const slides = [];
+
+    // 1. Start Slide
+    slides.push({
+        type: 'start',
+        title: metadata.title || 'Untitled Slide',
+        book: metadata.book || '',
+        text: metadata.text ? `Text: ${metadata.text}` : '',
+        melody: metadata.melody ? `Melody: ${metadata.melody}` : '',
+        totalVerses: Object.keys(songtext).length
+    });
+
+    // 2. Verse / Refrain Slides
+    structureList.forEach((structItem, idx) => {
+        const verseLyrics = songtext[structItem] || `[Structure element ${structItem} not found]`;
+        
+        // Check for multi-page split if too long (> 8 lines)
+        const lines = verseLyrics.split('\\n');
+        const maxLinesPerPage = 8;
+        
+        if (lines.length <= maxLinesPerPage) {
+            slides.push({
+                type: 'verse',
+                title: metadata.title || '',
+                book: metadata.book || '',
+                verseLabel: structItem,
+                textLines: lines,
+                index: idx,
+                totalInSequence: structureList.length,
+                hasArrow: false,
+                songStructure: structureList
+            });
+        } else {
+            // Split across pages
+            const pages = [];
+            for (let i = 0; i < lines.length; i += maxLinesPerPage) {
+                pages.push(lines.slice(i, i + maxLinesPerPage));
+            }
+            pages.forEach((pageLines, pIdx) => {
+                slides.push({
+                    type: 'verse',
+                    title: metadata.title || '',
+                    book: metadata.book || '',
+                    verseLabel: structItem,
+                    textLines: pageLines,
+                    index: idx,
+                    totalInSequence: structureList.length,
+                    hasArrow: pIdx < pages.length - 1,
+                    pageNumber: pIdx + 1,
+                    songStructure: structureList
+                });
+            });
+        }
+    });
+
+    return slides;
+}
+
+// --- Canvas Drawing Routine ---
+function renderSlide(slide) {
+    if (!slide) return;
+
+    const W = 1920;
+    const H = 1080;
+    const bgColor = bgColorPicker.value;
+    const accentColor = accentColorPicker.value;
+    const currentTheme = THEMES[themeSelect.value] || THEMES.classic;
+
+    // Background
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, W, H);
+
+    if (slide.type === 'start') {
+        // --- Start Slide Layout ---
+        // Header title banner
+        const titleH = 160;
+        const titleY = 65;
+
+        // Accent Banner
+        ctx.fillStyle = accentColor;
+        ctx.fillRect(0, titleY, W, titleH);
+
+        // Accent Triangle
+        ctx.fillStyle = currentTheme.titleBg;
+        ctx.beginPath();
+        ctx.moveTo(W - 120, titleY);
+        ctx.lineTo(W, titleY);
+        ctx.lineTo(W, titleY + titleH);
+        ctx.closePath();
+        ctx.fill();
+
+        // Title Text
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 64px 'Plus Jakarta Sans', sans-serif";
+        ctx.textBaseline = "middle";
+        ctx.fillText(slide.title, 80, titleY + (titleH / 2));
+
+        // Subtitle / Book
+        if (slide.book) {
+            ctx.fillStyle = currentTheme.text;
+            ctx.font = "600 36px 'Plus Jakarta Sans', sans-serif";
+            ctx.textBaseline = "top";
+            ctx.fillText(slide.book, 80, 260);
+        }
+
+        // Attribution Info at Bottom
+        ctx.fillStyle = currentTheme.text;
+        ctx.font = "500 32px 'Plus Jakarta Sans', sans-serif";
+        let attrY = 880;
+        if (slide.text) {
+            ctx.fillText(slide.text, 80, attrY);
+            attrY += 50;
+        }
+        if (slide.melody) {
+            ctx.fillText(slide.melody, 80, attrY);
+        }
+
+    } else {
+        // --- Verse Slide Layout ---
+        // Top Title Bar
+        const titleBarY = 60;
+        const titleBarH = 120;
+        ctx.fillStyle = accentColor;
+        ctx.fillRect(0, titleBarY, W, titleBarH);
+
+        // Slide Song Title
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 52px 'Plus Jakarta Sans', sans-serif";
+        ctx.textBaseline = "middle";
+        ctx.fillText(slide.title, 80, titleBarY + (titleBarH / 2));
+
+        // Structure Indicator (e.g. [1], [2], or [R])
+        const isRefrain = slide.verseLabel.toUpperCase() === 'R';
+        const labelText = isRefrain ? "Refrain" : `Verse ${slide.verseLabel}`;
+        
+        ctx.fillStyle = accentColor;
+        ctx.font = "bold 44px 'Plus Jakarta Sans', sans-serif";
+        ctx.textBaseline = "top";
+        ctx.fillText(labelText, 80, 240);
+
+        // Lyrics Text Canvas
+        ctx.fillStyle = currentTheme.text;
+        ctx.font = "500 48px 'Plus Jakarta Sans', sans-serif";
+        let startY = 320;
+        const lineHeight = 66;
+
+        slide.textLines.forEach(line => {
+            ctx.fillText(line, 160, startY);
+            startY += lineHeight;
+        });
+
+        // Continuation Arrow if multi-page
+        if (slide.hasArrow) {
+            ctx.fillStyle = accentColor;
+            ctx.beginPath();
+            const ax = 1750, ay = 920;
+            ctx.moveTo(ax, ay);
+            ctx.lineTo(ax + 40, ay + 20);
+            ctx.lineTo(ax, ay + 40);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        // Bottom progress indicator dots
+        const totalItems = slide.songStructure.length;
+        const startX = 1600;
+        const dotY = 1010;
+        for (let i = 0; i < totalItems; i++) {
+            const isCurrent = (i === slide.index);
+            ctx.fillStyle = isCurrent ? accentColor : "rgba(150, 150, 150, 0.4)";
+            ctx.beginPath();
+            ctx.arc(startX + (i * 28), dotY, isCurrent ? 8 : 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+}
+
+// --- Render & UI Refresh ---
+function generateAndRender() {
+    generatedSlideList = buildSlideObjects();
+    if (currentSlideIndex >= generatedSlideList.length) {
+        currentSlideIndex = 0;
+    }
+    updateSlideDisplay();
+    renderThumbnails();
+}
+
+function updateSlideDisplay() {
+    if (generatedSlideList.length === 0) return;
+    const current = generatedSlideList[currentSlideIndex];
+    renderSlide(current);
+
+    const typeDesc = current.type === 'start' ? 'Start Screen' : `Sequence ${current.index + 1} (${current.verseLabel})`;
+    slideIndicator.textContent = `Slide ${currentSlideIndex + 1} / ${generatedSlideList.length} • ${typeDesc}`;
+
+    // Update active thumbnail
+    document.querySelectorAll('.thumb-item').forEach((el, idx) => {
+        el.classList.toggle('active', idx === currentSlideIndex);
+    });
+}
+
+function renderThumbnails() {
+    thumbnailsContainer.innerHTML = '';
+    generatedSlideList.forEach((slide, idx) => {
+        const item = document.createElement('div');
+        item.className = `thumb-item ${idx === currentSlideIndex ? 'active' : ''}`;
+        
+        // Mini canvas for preview thumbnail
+        const miniCanvas = document.createElement('canvas');
+        miniCanvas.width = 160;
+        miniCanvas.height = 90;
+        const miniCtx = miniCanvas.getContext('2d');
+        miniCtx.drawImage(canvas, 0, 0, 160, 90);
+
+        const label = document.createElement('div');
+        label.className = 'thumb-label';
+        label.textContent = slide.type === 'start' ? 'Title' : `#${idx + 1} [${slide.verseLabel}]`;
+
+        item.appendChild(miniCanvas);
+        item.appendChild(label);
+        item.addEventListener('click', () => {
+            currentSlideIndex = idx;
+            updateSlideDisplay();
+        });
+        thumbnailsContainer.appendChild(item);
+    });
+}
+
+// --- Export Functions ---
+function downloadCurrentSlide() {
+    const link = document.createElement('a');
+    link.download = `slide-${String(currentSlideIndex + 1).padStart(2, '0')}.jpg`;
+    link.href = canvas.toDataURL('image/jpeg', 0.95);
+    link.click();
+}
+
+async function downloadAllAsZip() {
+    if (typeof JSZip === 'undefined') {
+        alert("JSZip library is still loading. Please try again in a moment.");
+        return;
+    }
+    const zip = new JSZip();
+    const folder = zip.folder("slides");
+
+    const prevIndex = currentSlideIndex;
+    for (let i = 0; i < generatedSlideList.length; i++) {
+        renderSlide(generatedSlideList[i]);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+        const base64Data = dataUrl.replace(/^data:image\\/jpeg;base64,/, "");
+        folder.file(`slide-${String(i + 1).padStart(2, '0')}.jpg`, base64Data, { base64: true });
+    }
+    // Restore current slide view
+    currentSlideIndex = prevIndex;
+    updateSlideDisplay();
+
+    const content = await zip.generateAsync({ type: "blob" });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(content);
+    link.download = "slidegen-obs-package.zip";
+    link.click();
+}
+
+// --- Event Handlers ---
+presetSelect.addEventListener('change', (e) => {
+    const val = e.target.value;
+    if (PRESETS[val]) {
+        textInput.value = PRESETS[val];
+        const parsed = parseSongFile(PRESETS[val]);
+        structureInput.value = parsed.metadata.structure || '';
+        generateAndRender();
+    }
+});
+
+themeSelect.addEventListener('change', (e) => {
+    const theme = THEMES[e.target.value];
+    if (theme) {
+        bgColorPicker.value = theme.bg;
+        accentColorPicker.value = theme.accent;
+        updateSlideDisplay();
+    }
+});
+
+bgColorPicker.addEventListener('input', updateSlideDisplay);
+accentColorPicker.addEventListener('input', updateSlideDisplay);
+
+document.getElementById('btnPrevSlide').addEventListener('click', () => {
+    if (currentSlideIndex > 0) {
+        currentSlideIndex--;
+        updateSlideDisplay();
+    }
+});
+
+document.getElementById('btnNextSlide').addEventListener('click', () => {
+    if (currentSlideIndex < generatedSlideList.length - 1) {
+        currentSlideIndex++;
+        updateSlideDisplay();
+    }
+});
+
+document.getElementById('btnGenerate').addEventListener('click', generateAndRender);
+document.getElementById('btnQuickGenerate').addEventListener('click', generateAndRender);
+document.getElementById('btnDownloadSingle').addEventListener('click', downloadCurrentSlide);
+document.getElementById('btnDownloadZip').addEventListener('click', downloadAllAsZip);
+
+// Keyboard navigation
+window.addEventListener('keydown', (e) => {
+    if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') return;
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+        if (currentSlideIndex < generatedSlideList.length - 1) {
+            currentSlideIndex++;
+            updateSlideDisplay();
+        }
+    } else if (e.key === 'ArrowLeft') {
+        if (currentSlideIndex > 0) {
+            currentSlideIndex--;
+            updateSlideDisplay();
+        }
+    }
+});
+
+// Initial boot
+textInput.value = PRESETS.amazing_grace;
+structureInput.value = "1, 2, 3, 4";
+generateAndRender();
+</script>
+</body>
+</html>
